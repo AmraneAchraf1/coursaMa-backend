@@ -24,6 +24,7 @@ class User extends Authenticatable
         'avatar',
         'status',
         'password',
+        'is_station_setup'
     ];
     /**
      * The attributes that should be hidden for serialization.

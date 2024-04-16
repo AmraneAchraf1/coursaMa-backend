@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('taxi_qeuees', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->integer('taxi_number')->unique();
+            $table->integer('taxi_number');
             // taxi enter time
             $table->timestamp('enter_time')->default(now());
             // taxi exit time

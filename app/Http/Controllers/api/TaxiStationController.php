@@ -33,16 +33,28 @@ class TaxiStationController extends Controller
             'address' => 'required',
         ]);
 
+        $user = Auth::user();
+
+        $is_station_setup = $user->is_station_setup;
+
+        if ($is_station_setup) {
+            return response()->json(['message' => 'You have already setup a taxi station'], 400);
+        }
+
         $taxiStation = TaxiStation::create([
             'name' => $request->name,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'city' => $request->city,
             'address' => $request->address,
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
         ]);
 
+        User::where('id', $user->id)->update(['is_station_setup' => 1]);
+
         return new TaxiStationResource($taxiStation);
+
+
     }
 
     /**

@@ -38,16 +38,26 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
             'avatar' => $request->avatar,
+
         ]);
 
+
+        if($user){
+            $token = $user->createToken('authToken')->plainTextToken;
+
+            return response()->json([
+                'token' => $token,
+                'user' => [
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'avatar' => $user->avatar ? Storage::disk('public')->url('avatars/' . $user->avatar) : null,
+                ]
+            ], 201);
+        }
+
         return response()->json([
-            'message' => 'User created successfully',
-            'user' => [
-                'name' => $user->name,
-                'phone' => $user->phone,
-                'avatar' => $user->avatar ? Storage::disk('public')->url('avatars/' . $user->avatar) : null,
-            ]
-        ], 201);
+            'message' => 'User registration failed',
+        ], 400);
 
     }
 
@@ -81,6 +91,7 @@ class AuthController extends Controller
             'user' => [
                 'name' => $user->name,
                 'phone' => $user->phone,
+                'is_station_setup' => $user->is_station_setup,
                 'avatar' => $user->avatar ? Storage::disk('public')->url('avatars/' . $user->avatar) : null,
             ]
         ], 200);
@@ -114,7 +125,7 @@ class AuthController extends Controller
             'name' => $user->name,
             'phone' => $user->phone,
             'avatar' => $user->avatar ? Storage::disk('public')->url('avatars/' . $user->avatar) : null,
-
+            'is_station_setup' => $user->is_station_setup,
         ], 200);
     }
 
@@ -129,8 +140,8 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'phone' => 'required|string',
-            'avatar' => 'nullable|string',
+            'phone' => 'required|string|unique:users,phone,' . $request->user()->id,
+            'avatar' => 'sometimes|image',
         ]);
 
         $user = $request->user();
@@ -155,7 +166,8 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user,
+            'user' => Storage::disk('public')->url('avatars/' . $fileName),
+            'is_station_setup' => $user->is_station_setup,
         ], 200);
     }
 

@@ -24,7 +24,7 @@ return new class extends Migration
             // station address
             $table->string('address');
             // user who created the station
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->unique()->constrained();
 
             $table->timestamps();
         });
