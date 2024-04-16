@@ -26,6 +26,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::get('user', [AuthController::class, 'user'])->middleware('auth:sanctum');
+Route::put('user-update', [AuthController::class, 'update'])->middleware('auth:sanctum');
 
 
 Route::apiResource('taxi-stations', TaxiStationController::class)->middleware('auth:sanctum');

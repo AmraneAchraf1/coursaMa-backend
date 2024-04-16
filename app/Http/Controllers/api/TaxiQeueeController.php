@@ -27,7 +27,7 @@ class TaxiQeueeController extends Controller
     {
 
         $request->validate([
-            'taxi_number' => 'required|unique:taxi_qeuees,taxi_number|numeric',
+            'taxi_number' => 'required|numeric',
             'from' => 'required',
             'to' => 'required',
             'passengers' => 'required',
@@ -63,19 +63,16 @@ class TaxiQeueeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TaxiQeuee $taxiQeuee)
+    public function update(Request $request, $id)
     {
-        $request->validate([
-            'taxi_number' => 'required',
-            'enter_time' => 'required',
-            'exit_time' => 'required',
-            'from' => 'required',
-            'to' => 'required',
-            'passengers' => 'required',
-            'status' => 'required',
-        ]);
+        $user = Auth::user();
+        $taxiQeuee = TaxiQeuee::where('user_id', $user->id)->find($id);
+        if ($taxiQeuee) {
+            $taxiQeuee->update($request->all());
+            return new TaxiQeueeResource($taxiQeuee);
+        }
 
-        $taxiQeuee->update($request->all());
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
 
     /**
